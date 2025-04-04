@@ -1,0 +1,56 @@
+cubes:
+  - name: queries
+    data_source: embeddable
+
+    sql: >
+      SELECT 
+        external_system_request_id,
+        request_payload,
+        response_payload,
+        substring(request_initiated_by from 'SECURITY_TOKEN_USER_(.*)')::uuid as token_id,
+        MAX(response_code) as response_code,
+        MIN(request_initiated_at) as created_at,
+        SUM(EXTRACT('epoch' FROM AGE(request_finished_at, request_initiated_at))::integer) as duration_in_seconds
+      FROM public.cube_request 
+      WHERE workspace_id = '{COMPILE_CONTEXT.securityContext.workspaceId}'
+      AND request_type = 'EXECUTE_QUERY'
+      AND request_origin = 'WEB_COMPONENT_API'
+      GROUP BY 1,2,3,4
+
+    joins:
+      - name: security_tokens # the name of the data model to join to (not the table)
+        sql: '{CUBE}.token_id = {security_tokens}.id'
+        relationship: many_to_one
+
+    dimensions:
+      - name: id
+        sql: external_system_request_id
+        type: string
+        primary_key: true
+        public: true
+
+      - name: query
+        sql: array_to_json(array[request_payload])->>0
+        type: string
+
+      - name: response_code
+        sql: response_code
+        type: number
+
+      - name: error
+        sql: response_payload
+        type: string
+
+      - name: duration_in_seconds
+        sql: duration_in_seconds
+        type: number
+
+      - name: created_at
+        sql: created_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+        title: '# of queries'
+

@@ -1,0 +1,32 @@
+cubes:
+  - name: environments
+    data_source: embeddable
+
+    sql: >
+      select *
+      from public.environment
+      where workspace_id = '{COMPILE_CONTEXT.securityContext.workspaceId}'
+      and deleted_at is null
+
+    joins:
+      - name: environment_connections # the name of the data model to join to (not the table)
+        sql: '{CUBE}.id = {environment_connections}.environment_id'
+        relationship: one_to_many
+      - name: security_tokens # the name of the data model to join to (not the table)
+        sql: '{CUBE}.name = {security_tokens}.environment_name'
+        relationship: one_to_many
+
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primary_key: true
+
+      - name: name
+        sql: name
+        type: string
+
+    measures:
+      - name: count
+        type: count
+        title: '# of environments'

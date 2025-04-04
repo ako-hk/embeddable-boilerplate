@@ -1,0 +1,33 @@
+cubes:
+  - name: users
+    data_source: embeddable
+
+    sql: >
+      select 
+        u.user_id,
+        u.email,
+        u.created_at
+      from public.permission p
+      join public.user_metadata u on u.user_id = p.user_id
+      where workspace_id = '{COMPILE_CONTEXT.securityContext.workspaceId}'
+      and u.deleted_at is null
+      and p.deleted_at is null
+
+    dimensions:
+      - name: id
+        sql: user_id
+        type: string
+        primary_key: true
+
+      - name: email
+        sql: email
+        type: string
+
+      - name: signed_up_at
+        sql: created_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+        title: '# of users'

@@ -1,0 +1,41 @@
+cubes:
+  - name: environment_connections
+    data_source: embeddable
+
+    sql: >
+      select 
+          e.id as environment_id, 
+          value->>'datasource' as datasource_name,
+          c.id as connection_id
+      from public.environment e
+      join jsonb_array_elements(datasources) with ordinality as d (value, key) on TRUE
+      join connection c on c.name = value->>'connection' and c.workspace_id = e.workspace_id
+      where e.workspace_id = '{COMPILE_CONTEXT.securityContext.workspaceId}'
+      and e.deleted_at is null
+      and c.deleted_at is null
+
+    joins:
+      - name: environments # the name of the data model to join to (not the table)
+        sql: '{CUBE}.environment_id = {environments}.id'
+        relationship: many_to_one
+      - name: connections # the name of the data model to join to (not the table)
+        sql: '{CUBE}.connection_id = {connections}.id'
+        relationship: many_to_one
+
+    dimensions:
+      - name: environment_id
+        sql: environment_id
+        type: string
+        primary_key: true
+        public: false
+
+      - name: datasource_name
+        sql: datasource_name
+        type: string
+        primary_key: true
+        public: true
+
+
+    
+
+

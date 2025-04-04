@@ -2,12 +2,12 @@
 # This context is only accessible within Cube models and enables row-level security. Note
 # that this file is only used by the builder.
 # See https://docs.embeddable.com/data-modeling/row-level-security
-- name: Example customer 1
+- name: Anykrowd
   securityContext:
-    country: United States
+    workspaceId: b029a783-a1f0-4bff-b74d-859e76132acb
   environment: default
 
-- name: Example customer 2
+- name: Astrafy
   securityContext:
-    country: Germany
+    workspaceId: 3bcf97f0-d30b-48a5-bfd8-cc775b5ec52c
   environment: default

@@ -1,0 +1,57 @@
+cubes:
+  - name: security_tokens
+    data_source: embeddable
+
+    sql: >
+      select *
+      from public.security_token
+      where workspace_id = '{COMPILE_CONTEXT.securityContext.workspaceId}'
+
+    joins:
+      - name: environments # the name of the data model to join to (not the table)
+        sql: '{CUBE}.environment_name = {environments}.name'
+        relationship: many_to_one
+
+    dimensions:
+      - name: id
+        sql: id
+        type: string
+        primary_key: true
+
+      - name: embeddable_id
+        sql: embeddable_id
+        type: string
+
+      - name: expiry_in_seconds
+        sql: expiry_seconds
+        type: number
+
+      - name: security_context
+        sql: array_to_json(array[security_context])->>0
+        # sql: security_context
+        type: string
+
+      - name: user_key
+        sql: user_key
+        type: string
+
+      - name: compilation_error
+        sql: compilation_error
+        type: string
+
+      - name: environment_name
+        sql: environment_name
+        type: string
+
+      - name: compilation_in_seconds
+        sql: EXTRACT('epoch' FROM AGE(compilation_finished_at, compilation_started_at))::integer
+        type: number
+
+      - name: created_at
+        sql: created_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+        title: '# of security tokens'
