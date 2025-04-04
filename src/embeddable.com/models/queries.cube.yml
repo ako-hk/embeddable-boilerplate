@@ -54,3 +54,16 @@ cubes:
         type: count
         title: '# of queries'
 
+      - name: average_duration_in_seconds
+        sql: duration_in_seconds
+        type: avg
+        title: 'Average duration in seconds'
+      - name: max_duration_in_seconds
+        sql: duration_in_seconds
+        type: max
+        title: 'Max duration in seconds'
+      - name: min_duration_in_seconds
+        sql: duration_in_seconds
+        type: min
+        title: 'Min duration in seconds'
+
