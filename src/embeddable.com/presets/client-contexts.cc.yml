@@ -3,7 +3,7 @@
 # used by the builder. See https://docs.embeddable.com/development/client-context
 - name: Default
   clientContext:
-    theme: 'default'
+    theme: 'example'
 
 - name: Example
   clientContext:
