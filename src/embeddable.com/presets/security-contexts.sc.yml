@@ -11,3 +11,13 @@
   securityContext:
     workspaceId: 3bcf97f0-d30b-48a5-bfd8-cc775b5ec52c
   environment: default
+
+- name: Cakewalk
+  securityContext:
+    workspaceId: 22845f21-c9ec-46a9-be2f-438097366166
+  environment: default
+
+- name: Eyk
+  securityContext:
+    workspaceId: dd901bef-c52d-4dc5-b088-ee724a35438e
+  environment: default
